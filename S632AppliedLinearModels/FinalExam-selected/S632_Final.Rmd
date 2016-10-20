@@ -1,0 +1,56 @@
+---
+title: "S632_Final"
+author: "Miao Chen"
+date: "April 30, 2016"
+output: pdf_document
+---
+
+
+```{r}
+setwd("/home/miao/Documents/StatsCourses/S632_Spring2016/FinalExam/")
+#source("syntax_final.R")
+```
+
+#get data
+```{r}
+data1 <- read.table("inter_assess.txt", header=TRUE)
+head(data1)
+```
+
+```{r}
+#using content from the syntax_final.R script
+data1=data1 #change this for the data 'inter_assess.txt'
+seed1=0405 # change this for your birthdate MMYY
+seed2=7031 # change this for the last 4 digits of your 10-digit IU number
+sample(row.names(data1),1)
+my_data=function(seed1=seed1,seed2=seed2,data1=data1){
+  n=dim(data1)[1]
+  k=dim(data1)[2]
+  set.seed(seed1)
+  my.n=round(runif(1,n/100,n/10))
+  set.seed(seed2)
+  my.data=data1[sample(1:dim(data1)[1],my.n),]
+  my.data
+}
+my.data=my_data(seed1 = 1,seed2 = 1,data1=data1)
+```
+
+#count num of complete cases (=294)
+```{r}
+sum(complete.cases(my.data))
+#see num of complete cases for each variable
+var.complete <- apply(my.data, MARGIN=2, FUN=function(x) {sum(complete.cases(x))})
+```
+
+Q2.
+
+Basic linear regression, using only copmlete cases
+```{r}
+m.lm <- lm(ASRREA01 ~ .-ASRIBM01, data=my.data)
+summary(m.lm)
+```
+
+
+
+
+

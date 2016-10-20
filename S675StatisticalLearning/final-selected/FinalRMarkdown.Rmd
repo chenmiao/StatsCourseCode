@@ -1,0 +1,119 @@
+---
+title: "FinalR"
+author: "Miao Chen"
+date: "December 16, 2015"
+output: html_document
+---
+
+###CMDS on Delta matrix from word-topic matrix
+
+First, we read in the data from .csv file
+
+```{r}
+#read in the .csv file into R. It was read as a data frame.
+DocTopicData=read.csv("C:\\Users\\Miao\\Desktop\\Courses\\S675 Statistical Learning\\topics20.csv",header=TRUE)
+#show the first sevearl rows of the document-topic matrix
+head(DocTopicData)
+```
+
+Compute the pairwise dissimilarities:
+```{r}
+#use the 2nd to last columns in the dataframe, because the 1st column is the text file name; and then convert it to a Matrix, X.
+X <- data.matrix(DocTopicData[,-1])
+#get squre root for the matrix elements. The rows represent points on teh unit sphere.
+Z <- sqrt(X) 
+#generate the (cosine) similarity matrix
+Gamma <- Z %*% t(Z)
+#generate the dissimilarity betweenrows i and j of X
+Delta <- acos(Gamma)
+#make the diagonal elements as 0, as they were NaN due to arccos computation
+diag(Delta) <- 0
+```
+
+```{r}
+Delta.cmds <- cmdscale(Delta, k=4, eig=TRUE)
+X <- Delta.cmds$points
+```
+
+Let r denote the number of strictly positive eigenvalues. Then r=348 according to the following command.
+```{r}
+length(subset(Delta.cmds$eig, Delta.cmds$eig>0))
+```
+
+
+```{r}
+#sum of the positive eigenvalues
+sum.positive_eig=sum(subset(Delta.cmds$eig, Delta.cmds$eig>0))
+sum.positive_eig
+
+#sum of the negative eigenvalues
+sum.negative_eig=sum(subset(Delta.cmds$eig, Delta.cmds$eig<0))
+sum.negative_eig
+
+#percentage of variation capture by the first k=4 principal components:
+sum(Delta.cmds$eig[1:4])/sum.positive_eig
+```
+
+The first k=4 dimensional representation captures 53.62% of the total variation.
+
+```{r}
+sum(Delta.cmds$eig[1:4])/sum.positive_eig
+```
+
+The amount of variation captured by d=4 dimensions out of the total variation is 53.62%. This seems not so sufficent because there is still 45.38% variation not captured, which is very close to the amount being captured. 
+
+```{r}
+#get all the positive eigenvalues
+positive_eigvalues=subset(Delta.cmds$eig, Delta.cmds$eig>0)
+#get cumulative sum for this vector
+cumsum_eigenvalues=cumsum(positive_eigvalues)
+#then get % of variation captured by each d<=r dimension
+variation.percentage=cumsum(positive_eigvalues)/sum.positive_eig
+#then plot the variation percentage at different d<=r dimension
+plot(variation.percentage, xlab="num of dimensions")
+#here we also show the captured variations of the first 24 dimension's 
+variation.percentage[1:24]
+```
+
+
+
+###CMDS on KL divergence
+
+```{r}
+Doc_Doc_KLDistance=read.csv("C:\\Users\\Miao\\Desktop\\Courses\\S675 Statistical Learning\\final\\darwin-voyage\\KLs\\kl_dists20.csv",header=TRUE)
+#show the first sevearl rows of the document-topic matrix
+head(Doc_Doc_KLDistance)[,1:10]
+
+#use the 2nd to last columns in the dataframe, because the 1st column is the text file name; and then convert it to a Matrix, X.
+Delta1 <- data.matrix(Doc_Doc_KLDistance[,-1])
+
+Delta1.cmds <- cmdscale(Delta1, k=4, eig=TRUE)
+
+#sum of the positive eigenvalues
+sum.positive_eig=sum(subset(Delta1.cmds$eig, Delta1.cmds$eig>0))
+sum.positive_eig
+
+#sum of the negative eigenvalues
+sum.negative_eig=sum(subset(Delta1.cmds$eig, Delta1.cmds$eig<0))
+sum.negative_eig
+
+#percentage of variation capture by the first k=4 principal components:
+sum(Delta1.cmds$eig[1:4])/sum.positive_eig
+```
+
+```{r}
+length(subset(Delta1.cmds$eig, Delta1.cmds$eig>0))
+```
+
+```{r}
+#get all the positive eigenvalues
+positive_eigvalues=subset(Delta1.cmds$eig, Delta1.cmds$eig>0)
+#get cumulative sum for this vector
+cumsum_eigenvalues=cumsum(positive_eigvalues)
+#then get % of variation captured by each d<=r dimension
+variation.percentage=cumsum(positive_eigvalues)/sum.positive_eig
+#then plot the variation percentage at different d<=r dimension
+plot(variation.percentage, xlab="num of dimensions")
+#here we also show the captured variations of the first 24 dimension's 
+variation.percentage[1:250]
+

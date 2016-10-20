@@ -1,0 +1,19 @@
+---
+title: "Spring 2016 S632 Final Report"
+author: "Miao Chen"
+date: "May 2, 2016"
+output: 
+  pdf_document: 
+    keep_tex: yes
+---
+
+
+Q1. Explain what the syntax_final.R does and apply it to the data inter_assess.tx. 
+
+The R script first generates a random number from uniform distribution[n/100,n/10] where n is the number of rows in the original data set and n=14,657 here, and that is to say, it first generates a number from uniform distribution [146.57, 1465.7]. The random number is then rounded to an integer. the number I obtained is 497 based on my seed setup. Then randomly sample 497 cases from the original data and use this as the working data set for the final project.
+
+Q2. 
+
+The data contains 294 complete cases, out of the total 497 cases. 
+
+
